@@ -11,6 +11,7 @@ import javafx.animation.ScaleTransition;
 import javafx.animation.SequentialTransition;
 import javafx.animation.Timeline;
 import javafx.geometry.VPos;
+import javafx.scene.CacheHint;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.effect.BlurType;
@@ -238,6 +239,7 @@ public class BoardView extends Region {
             SequentialTransition seq = new SequentialTransition(new PauseTransition(Duration.millis(k * step)), up, down);
             int fk = k;
             seq.setOnFinished(e -> {
+                stone.setCacheHint(CacheHint.SCALE); // breathe by scaling the cached bitmap
                 ScaleTransition breathe = new ScaleTransition(Duration.millis(900), stone);
                 breathe.setFromX(1.0);
                 breathe.setFromY(1.0);
@@ -278,6 +280,15 @@ public class BoardView extends Region {
         PauseTransition wait = new PauseTransition(Duration.millis(path.size() * step + 650));
         wait.setOnFinished(e -> done.run());
         wait.play();
+    }
+
+    /** Freezes the looping win animations, e.g. while a blurred dialog covers the board. */
+    public void pauseLoops() {
+        loops.forEach(Animation::pause);
+    }
+
+    public void resumeLoops() {
+        loops.forEach(Animation::play);
     }
 
     /** Pulsing gold ring around a suggested cell. */
@@ -381,6 +392,9 @@ public class BoardView extends Region {
         blue.setEffect(new DropShadow(BlurType.GAUSSIAN, Theme.BLUE, 22, 0.25, 0, 0));
         styleEdges(red, Theme.RED);
         styleEdges(blue, Theme.BLUE);
+        // the glowing rims never change after the intro: render the blur once
+        red.setCache(true);
+        blue.setCache(true);
         edgeLayer.getChildren().addAll(red, blue);
     }
 
@@ -471,6 +485,8 @@ public class BoardView extends Region {
         shine.setScaleY(0.55);
         Group stone = new Group(body, shine);
         stone.setEffect(new DropShadow(BlurType.GAUSSIAN, Theme.color(p).deriveColor(0, 1, 1, 0.65), R * 0.6, 0.15, 0, 2));
+        // cached bitmap: neighbouring hover/ghost updates no longer re-run the shadow blur
+        stone.setCache(true);
         return stone;
     }
 
@@ -500,7 +516,9 @@ public class BoardView extends Region {
         Glow glow = new Glow(0.8);
         Node body = ((Group) stone).getChildren().get(0);
         body.setEffect(glow);
-        new Timeline(new KeyFrame(Duration.millis(500), new KeyValue(glow.levelProperty(), 0))).play();
+        Timeline fadeGlow = new Timeline(new KeyFrame(Duration.millis(500), new KeyValue(glow.levelProperty(), 0)));
+        fadeGlow.setOnFinished(e -> body.setEffect(null));
+        fadeGlow.play();
     }
 
     private void removeStone(int idx, boolean animate) {

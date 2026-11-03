@@ -12,7 +12,7 @@ JavaFX ile yazılmış modern bir **Hex** strateji oyunu. İki kişi aynı bilgi
 - **Geri alma (Ctrl+Z), ipucu (H) ve yeniden başlatma (R).**
 - **Rövanş:** Renkler yer değiştirir, skor oyuncuyla birlikte taşınır.
 - **Oyuncu kartları:** Hamle sayısı, oyuncu başına süre, galibiyetler ve sıranın kimde olduğunu gösteren parlama.
-- **Animasyonlar:** Hareketli arka plan, tahtanın dalga halinde belirmesi, taşların "pop" efekti ve dalgası, hover önizlemesi, kazanan zincirin ışıması, konfeti ve bulanık arka planlı sonuç kartı.
+- **Animasyonlar:** Hareketli arka plan, tahtanın dalga halinde belirmesi, taşların "pop" efekti ve dalgası, hover önizlemesi, kazanan zincirin ışıması ve bulanık arka planlı sonuç kartı.
 - **Ayarları hatırlama:** İsimler, mod, boyut ve zorluk bir sonraki açılışta hazır gelir.
 - **Tam ekran:** F11 ile açılır, Esc ile çıkılır.
 
@@ -25,6 +25,8 @@ Gereken tek şey **JDK 21**. Maven gerekmez, wrapper kendini indirir.
 ./mvnw javafx:run        # macOS / Linux / Git Bash
 mvnw.cmd javafx:run      # Windows (cmd / PowerShell)
 ```
+
+> **Hibrit grafikli dizüstüler (Intel + NVIDIA):** Windows `java.exe`yi varsayılan olarak entegre GPU'da çalıştırabilir. *Ayarlar → Sistem → Ekran → Grafik* bölümünden JDK'nın `java.exe` dosyasını ekleyip **Yüksek performans** seçin.
 
 Testler:
 
@@ -46,7 +48,7 @@ src/main/java/org/example/hexgame/
 ├── ai/HexAI.java          0-1 BFS bağlantı mesafesi + 2 hamle ileriye bakan minimax
 └── ui/                    Görünümler ve bileşenler
     ├── MenuView, GameView, BoardView, PlayerCard
-    ├── Segmented, ToggleSwitch, Modal, Confetti, AnimatedBackground
+    ├── Segmented, ToggleSwitch, Modal, AnimatedBackground
     └── Theme, Fx (animasyon yardımcıları), Icons
 src/main/resources/org/example/hexgame/styles.css
 ```

@@ -6,6 +6,7 @@ import javafx.animation.ScaleTransition;
 import javafx.animation.Timeline;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.CacheHint;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.effect.BlurType;
@@ -53,6 +54,8 @@ public class PlayerCard extends VBox {
         hex.setFill(new LinearGradient(0, 0, 1, 1, true, CycleMethod.NO_CYCLE,
                 new Stop(0, Theme.light(color)), new Stop(0.5, Theme.color(color)), new Stop(1, Theme.dark(color))));
         hex.setEffect(new DropShadow(BlurType.GAUSSIAN, Theme.color(color).deriveColor(0, 1, 1, 0.6), 22, 0.2, 0, 0));
+        hex.setCache(true); // shadow rendered once, reused while the avatar animates
+        hex.setCacheHint(CacheHint.SCALE);
         avatar.getChildren().add(hex);
         avatar.setMinSize(76, 76);
 
@@ -74,13 +77,16 @@ public class PlayerCard extends VBox {
 
         getChildren().addAll(avatar, name, badge, goal, stats, thinking);
 
-        pulse = new ScaleTransition(Duration.millis(900), avatar);
+        // one-shot "your turn" bounce; a looping pulse would force the card's large drop
+        // shadow to be recomputed every frame
+        pulse = new ScaleTransition(Duration.millis(260), avatar);
         pulse.setFromX(1);
         pulse.setFromY(1);
-        pulse.setToX(1.1);
-        pulse.setToY(1.1);
+        pulse.setToX(1.14);
+        pulse.setToY(1.14);
         pulse.setAutoReverse(true);
-        pulse.setCycleCount(Animation.INDEFINITE);
+        pulse.setCycleCount(2);
+        pulse.setInterpolator(Fx.EASE_OUT_CUBIC);
 
         String[] frames = {"düşünüyor", "düşünüyor.", "düşünüyor..", "düşünüyor..."};
         int[] i = {0};

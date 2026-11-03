@@ -395,15 +395,6 @@ public class GameView extends StackPane {
                 new Stop(0, Theme.light(winner)), new Stop(1, Theme.dark(winner))));
         hex.setEffect(new DropShadow(BlurType.GAUSSIAN, Theme.color(winner), 40, 0.3, 0, 0));
         trophy.getChildren().addAll(hex, Icons.icon(Icons.TROPHY, 46, Color.WHITE));
-        ScaleTransition bob = new ScaleTransition(Duration.millis(1100), trophy);
-        bob.setFromX(1);
-        bob.setFromY(1);
-        bob.setToX(1.08);
-        bob.setToY(1.08);
-        bob.setAutoReverse(true);
-        bob.setCycleCount(Animation.INDEFINITE);
-        bob.play();
-
         boolean humanLost = config.mode() == GameConfig.Mode.AI && config.isAI(winner);
         Label kicker = new Label(humanLost ? "BU SEFER OLMADI" : "TEBRİKLER");
         kicker.getStyleClass().add("section-title");
@@ -453,13 +444,13 @@ public class GameView extends StackPane {
         Modal thisModal = winModal;
         view.setOnAction(e -> thisModal.close());
         winModal.setOnClosed(() -> {
-            bob.stop();
+            boardView.resumeLoops();
             if (winModal == thisModal) {
                 winModal = null;
             }
         });
+        boardView.pauseLoops();
         winModal.show(this);
-        Confetti.burst(this, List.of(Theme.color(winner), Theme.light(winner), Theme.GOLD, Color.WHITE, Theme.VIOLET));
         int i = 0;
         for (var node : body.getChildren()) {
             Fx.reveal(node, 120 + i++ * 70, 14);

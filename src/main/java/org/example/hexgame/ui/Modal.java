@@ -57,6 +57,10 @@ public class Modal extends StackPane {
         cs.setToX(1);
         cs.setToY(1);
         cs.setInterpolator(Fx.EASE_OUT_BACK);
+        if (blurTarget != null) {
+            // the blurred screen behind the dialog is static: blur it once, then reuse the bitmap
+            blurTarget.setCache(true);
+        }
         new ParallelTransition(bf, cf, cs, blur(0, 14)).play();
     }
 
@@ -76,6 +80,7 @@ public class Modal extends StackPane {
         pt.setOnFinished(e -> {
             if (blurTarget != null) {
                 blurTarget.setEffect(null);
+                blurTarget.setCache(false);
             }
             if (getParent() instanceof StackPane parent) {
                 parent.getChildren().remove(this);

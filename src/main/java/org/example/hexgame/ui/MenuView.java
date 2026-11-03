@@ -15,6 +15,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.BlurType;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.GaussianBlur;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -23,7 +24,9 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.RadialGradient;
 import javafx.scene.paint.Stop;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -52,15 +55,25 @@ public class MenuView extends StackPane {
         Text title = new Text("HEX");
         title.setFont(Font.font("Segoe UI Black", FontWeight.BLACK, 132));
         title.setFill(Fx.brandGradient());
-        DropShadow titleGlow = new DropShadow(BlurType.GAUSSIAN, Theme.VIOLET.deriveColor(0, 1, 1, 0.75), 40, 0.15, 0, 0);
-        title.setEffect(titleGlow);
+        title.setEffect(new DropShadow(BlurType.GAUSSIAN, Theme.VIOLET.deriveColor(0, 1, 1, 0.6), 30, 0.15, 0, 0));
+        title.setCache(true);
+        // Breathing halo: a pre-blurred copy whose opacity pulses. Animating opacity of a cached
+        // node is nearly free, whereas animating a blur radius re-blurs the text every frame.
+        Text halo = new Text("HEX");
+        halo.setFont(title.getFont());
+        halo.setFill(Fx.brandGradient());
+        halo.setEffect(new GaussianBlur(36));
+        halo.setCache(true);
+        halo.setMouseTransparent(true);
         Timeline glowPulse = new Timeline(
-                new KeyFrame(Duration.ZERO, new KeyValue(titleGlow.radiusProperty(), 30)),
-                new KeyFrame(Duration.seconds(2.2), new KeyValue(titleGlow.radiusProperty(), 70, Fx.EASE_IN_OUT)));
+                new KeyFrame(Duration.ZERO, new KeyValue(halo.opacityProperty(), 0.25)),
+                new KeyFrame(Duration.seconds(2.2), new KeyValue(halo.opacityProperty(), 0.85, Fx.EASE_IN_OUT)));
         glowPulse.setAutoReverse(true);
         glowPulse.setCycleCount(Animation.INDEFINITE);
         glowPulse.play();
         loops.add(glowPulse);
+        StackPane titleBox = new StackPane(halo, title);
+        titleBox.setAlignment(Pos.CENTER_LEFT);
 
         Label tagline = new Label("Kenarlarını birleştir. Rakibini kes.");
         tagline.getStyleClass().add("tagline");
@@ -71,7 +84,7 @@ public class MenuView extends StackPane {
         blurb.setMaxWidth(420);
 
         HBox chips = new HBox(8, featureChip("Bilgisayar rakip"), featureChip("6 tahta boyutu"), featureChip("Takas kuralı"));
-        VBox hero = new VBox(14, logo, title, tagline, blurb, chips);
+        VBox hero = new VBox(14, logo, titleBox, tagline, blurb, chips);
         hero.setAlignment(Pos.CENTER_LEFT);
         hero.setMaxWidth(470);
 
@@ -265,14 +278,17 @@ public class MenuView extends StackPane {
             breathe.play();
             loops.add(breathe);
         }
-        flower.setEffect(new DropShadow(BlurType.GAUSSIAN, Theme.VIOLET.deriveColor(0, 1, 1, 0.6), 30, 0.1, 0, 0));
+        // soft glow drawn as a gradient (no per-frame blur while the petals animate)
+        Circle aura = new Circle(70, new RadialGradient(0, 0, 0.5, 0.5, 0.5, true, CycleMethod.NO_CYCLE,
+                new Stop(0, Theme.VIOLET.deriveColor(0, 1, 1, 0.45)), new Stop(1, Color.TRANSPARENT)));
+        aura.setMouseTransparent(true);
         RotateTransition spin = new RotateTransition(Duration.seconds(24), flower);
         spin.setByAngle(360);
         spin.setCycleCount(Animation.INDEFINITE);
         spin.setInterpolator(javafx.animation.Interpolator.LINEAR);
         spin.play();
         loops.add(spin);
-        StackPane holder = new StackPane(flower);
+        StackPane holder = new StackPane(aura, flower);
         holder.setMinSize(120, 120);
         holder.setMaxSize(120, 120);
         return holder;

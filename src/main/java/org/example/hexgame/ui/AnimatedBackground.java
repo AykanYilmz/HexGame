@@ -16,7 +16,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-/** Living backdrop: two drifting colour glows and slowly rising hexagon outlines. */
+/**
+ * Living backdrop: static colour glows plus a few slowly rising hexagon outlines.
+ * <p>
+ * Performance notes: the big glows only move on resize (moving them every frame forces a
+ * full-screen repaint), the outlines have no fill and no effects, and the whole animation is
+ * paused while a game is on screen.
+ */
 public class AnimatedBackground extends Pane {
 
     private static final class Floater {
@@ -31,34 +37,37 @@ public class AnimatedBackground extends Pane {
     private final Circle glowRed = glow(Theme.RED, 0.30);
     private final Circle glowBlue = glow(Theme.BLUE, 0.26);
     private final Circle glowViolet = glow(Theme.VIOLET, 0.16);
+    private final AnimationTimer timer;
     private boolean seeded;
     private long last;
-    private double time;
 
     public AnimatedBackground() {
         setMouseTransparent(true);
         getChildren().addAll(glowViolet, glowRed, glowBlue, floaterLayer);
-        for (int i = 0; i < 28; i++) {
+        for (int i = 0; i < 18; i++) {
             Floater f = new Floater();
-            f.radius = 10 + Math.pow(rng.nextDouble(), 2) * 70;
+            f.radius = 12 + Math.pow(rng.nextDouble(), 2) * 64;
             f.node = Fx.hexagon(f.radius);
             Color base = switch (i % 3) {
                 case 0 -> Theme.RED;
                 case 1 -> Theme.BLUE;
                 default -> Color.WHITE;
             };
-            f.node.setFill(base.deriveColor(0, 1, 1, 0.025));
+            f.node.setFill(null);
             f.node.setStroke(base.deriveColor(0, 1, 1, 0.10 + rng.nextDouble() * 0.14));
             f.node.setStrokeWidth(1.2);
-            f.vy = -(6 + rng.nextDouble() * 18) * (40 / (f.radius + 20));
+            f.vy = -(6 + rng.nextDouble() * 16) * (40 / (f.radius + 20));
             f.vx = (rng.nextDouble() - 0.5) * 6;
-            f.vr = (rng.nextDouble() - 0.5) * 14;
+            f.vr = (rng.nextDouble() - 0.5) * 12;
             f.rot = rng.nextDouble() * 60;
             floaters.add(f);
             floaterLayer.getChildren().add(f.node);
         }
 
-        new AnimationTimer() {
+        widthProperty().addListener(o -> placeGlows());
+        heightProperty().addListener(o -> placeGlows());
+
+        timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
                 if (last == 0) {
@@ -69,7 +78,8 @@ public class AnimatedBackground extends Pane {
                 last = now;
                 tick(dt);
             }
-        }.start();
+        };
+        timer.start();
     }
 
     private static Circle glow(Color c, double alpha) {
@@ -77,6 +87,21 @@ public class AnimatedBackground extends Pane {
         circle.setFill(new RadialGradient(0, 0, 0.5, 0.5, 0.5, true, CycleMethod.NO_CYCLE,
                 new Stop(0, c.deriveColor(0, 1, 1, alpha)), new Stop(1, c.deriveColor(0, 1, 1, 0))));
         return circle;
+    }
+
+    private void placeGlows() {
+        double w = getWidth();
+        double h = getHeight();
+        double big = Math.max(w, h);
+        glowRed.setRadius(big * 0.42);
+        glowRed.setCenterX(w * 0.12);
+        glowRed.setCenterY(h * 0.18);
+        glowBlue.setRadius(big * 0.45);
+        glowBlue.setCenterX(w * 0.88);
+        glowBlue.setCenterY(h * 0.85);
+        glowViolet.setRadius(big * 0.35);
+        glowViolet.setCenterX(w * 0.5);
+        glowViolet.setCenterY(h * 0.5);
     }
 
     private void tick(double dt) {
@@ -92,18 +117,6 @@ public class AnimatedBackground extends Pane {
             }
             seeded = true;
         }
-        time += dt;
-        double big = Math.max(w, h);
-        glowRed.setRadius(big * 0.42);
-        glowRed.setCenterX(w * 0.12 + Math.sin(time * 0.11) * w * 0.06);
-        glowRed.setCenterY(h * 0.18 + Math.cos(time * 0.13) * h * 0.08);
-        glowBlue.setRadius(big * 0.45);
-        glowBlue.setCenterX(w * 0.88 + Math.cos(time * 0.09) * w * 0.06);
-        glowBlue.setCenterY(h * 0.85 + Math.sin(time * 0.12) * h * 0.08);
-        glowViolet.setRadius(big * 0.35);
-        glowViolet.setCenterX(w * 0.5 + Math.sin(time * 0.07) * w * 0.15);
-        glowViolet.setCenterY(h * 0.5 + Math.cos(time * 0.05) * h * 0.1);
-
         for (Floater f : floaters) {
             f.x += f.vx * dt;
             f.y += f.vy * dt;
@@ -123,10 +136,16 @@ public class AnimatedBackground extends Pane {
         }
     }
 
-    /** Tone the decoration down while a game is on screen. */
+    /** During a game the decoration fades down and stops moving, so the board gets the whole GPU. */
     public void setCalm(boolean calm) {
         FadeTransition ft = new FadeTransition(Duration.millis(600), floaterLayer);
         ft.setToValue(calm ? 0.35 : 1.0);
+        if (calm) {
+            ft.setOnFinished(e -> timer.stop());
+        } else {
+            last = 0;
+            timer.start();
+        }
         ft.play();
     }
 }
