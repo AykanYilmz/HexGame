@@ -14,7 +14,9 @@ JavaFX ile yazılmış, neon arayüzlü, yapay zekâ rakipli ve iki dilli bir He
 
 <img src="docs/screenshots/menu.png" alt="Ana menü" width="860">
 
-[İndir](#-kurulum) · [Nasıl oynanır](#-nasıl-oynanır) · [Özellikler](#-özellikler) · [HexBot](#-hexbot-nasıl-düşünüyor) · [Geliştirme](#-geliştirme) · [🇬🇧 English](README.en.md)
+<a href="https://github.com/AykanYilmz/HexGame/releases/latest/download/Hex-windows.zip"><img src="https://img.shields.io/badge/%E2%AC%87_%C4%B0ndir-Windows-7B5CFF?style=for-the-badge" alt="Windows için indir"></a>
+
+[Kurulum](#-kurulum) · [Nasıl oynanır](#-nasıl-oynanır) · [Özellikler](#-özellikler) · [HexBot](#-hexbot-nasıl-düşünüyor) · [Geliştirme](#-geliştirme) · [🇬🇧 English](README.en.md)
 
 </div>
 
@@ -79,7 +81,9 @@ Devralınan taş, tahtanın uzun köşegenine göre **yansıtılarak** maviye ge
 
 ### Hazır sürüm (Windows, Java gerekmez)
 
-[Releases](https://github.com/AykanYilmz/HexGame/releases) sayfasından en son `Hex-<sürüm>-windows.zip` dosyasını indir, bir klasöre aç ve `Hex.exe`'ye çift tıkla. Paketin içinde kendi Java çalışma ortamı vardır.
+**[⬇ Hex-windows.zip dosyasını indir](https://github.com/AykanYilmz/HexGame/releases/latest/download/Hex-windows.zip)**, bir klasöre aç ve `Hex.exe`'ye çift tıkla. Paketin içinde kendi Java çalışma ortamı vardır. Eski sürümler [Releases](https://github.com/AykanYilmz/HexGame/releases) sayfasında.
+
+> Windows SmartScreen "tanınmayan uygulama" uyarısı gösterirse *Ek bilgi → Yine de çalıştır* seçeneğine bas. Uygulama imzalı olmadığı için bu uyarı normal.
 
 ### Kaynaktan
 

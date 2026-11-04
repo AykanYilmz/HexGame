@@ -13,7 +13,9 @@ A Hex strategy game built with JavaFX, featuring a neon interface, a computer op
 
 <img src="docs/screenshots/english.png" alt="Game in English" width="860">
 
-[Download](#-install) · [How to play](#-how-to-play) · [Features](#-features) · [HexBot](#-how-hexbot-thinks) · [Development](#-development) · [🇹🇷 Türkçe](README.md)
+<a href="https://github.com/AykanYilmz/HexGame/releases/latest/download/Hex-windows.zip"><img src="https://img.shields.io/badge/%E2%AC%87_Download-Windows-7B5CFF?style=for-the-badge" alt="Download for Windows"></a>
+
+[Install](#-install) · [How to play](#-how-to-play) · [Features](#-features) · [HexBot](#-how-hexbot-thinks) · [Development](#-development) · [🇹🇷 Türkçe](README.md)
 
 </div>
 
@@ -57,7 +59,7 @@ The stone is **mirrored** across the board's long diagonal as it changes hands: 
 
 ## 📦 Install
 
-**Ready-made build (Windows, no Java needed):** download the latest `Hex-<version>-windows.zip` from [Releases](https://github.com/AykanYilmz/HexGame/releases), unzip it and run `Hex.exe`. The package ships its own Java runtime.
+**Ready-made build (Windows, no Java needed):** **[⬇ download Hex-windows.zip](https://github.com/AykanYilmz/HexGame/releases/latest/download/Hex-windows.zip)**, unzip it and run `Hex.exe`. The package ships its own Java runtime. Older versions are on the [Releases](https://github.com/AykanYilmz/HexGame/releases) page. If Windows SmartScreen warns about an unrecognised app, choose *More info → Run anyway*; the app is not code-signed.
 
 **From source:** you only need **JDK 21**, for example [Eclipse Temurin](https://adoptium.net/). Maven comes with the project as a wrapper.
 

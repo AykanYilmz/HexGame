@@ -28,8 +28,8 @@ jobs:
             --runtime-image target/hexgame `
             --module io.github.aykanyilmz.hexgame/io.github.aykanyilmz.hexgame.HexApp `
             --dest target/dist
-          Compress-Archive -Path target/dist/Hex -DestinationPath "Hex-$version-windows.zip"
+          Compress-Archive -Path target/dist/Hex -DestinationPath Hex-windows.zip
       - uses: softprops/action-gh-release@v2
         with:
-          files: Hex-*-windows.zip
+          files: Hex-windows.zip
           generate_release_notes: true
