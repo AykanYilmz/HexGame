@@ -1,6 +1,6 @@
-module org.example.hexgame {
+module io.github.aykanyilmz.hexgame {
     requires javafx.controls;
     requires java.prefs;
 
-    exports org.example.hexgame;
+    exports io.github.aykanyilmz.hexgame;
 }

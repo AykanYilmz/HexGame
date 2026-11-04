@@ -1,0 +1,35 @@
+name: Release
+
+# Push a tag such as v1.1.0 to publish a Windows build that runs without a JDK.
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: maven
+      - name: Test and build runtime image
+        run: ./mvnw -B test javafx:jlink
+      - name: Package Hex.exe
+        shell: pwsh
+        run: |
+          $version = '${{ github.ref_name }}'.TrimStart('v')
+          jpackage --type app-image --name Hex --app-version $version `
+            --runtime-image target/hexgame `
+            --module io.github.aykanyilmz.hexgame/io.github.aykanyilmz.hexgame.HexApp `
+            --dest target/dist
+          Compress-Archive -Path target/dist/Hex -DestinationPath "Hex-$version-windows.zip"
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: Hex-*-windows.zip
+          generate_release_notes: true
